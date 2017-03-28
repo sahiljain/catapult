@@ -258,8 +258,8 @@ def _IsGceInstance(serial):
   return _IPV4_ADDRESS_RE.match(serial)
 
 
-def _CreateAdbWrapper(device):
-  if _IsGceInstance(str(device)):
+def _CreateAdbWrapper(device, disable_gce=False):
+  if not disable_gce and _IsGceInstance(str(device)):
     return gce_adb_wrapper.GceAdbWrapper(str(device))
   else:
     if isinstance(device, adb_wrapper.AdbWrapper):
@@ -295,7 +295,7 @@ class DeviceUtils(object):
 
   def __init__(self, device, enable_device_files_cache=False,
                default_timeout=_DEFAULT_TIMEOUT,
-               default_retries=_DEFAULT_RETRIES):
+               default_retries=_DEFAULT_RETRIES, disable_gce=False):
     """DeviceUtils constructor.
 
     Args:
@@ -310,7 +310,7 @@ class DeviceUtils(object):
     """
     self.adb = None
     if isinstance(device, basestring):
-      self.adb = _CreateAdbWrapper(device)
+      self.adb = _CreateAdbWrapper(device, disable_gce)
     elif isinstance(device, adb_wrapper.AdbWrapper):
       self.adb = device
     else:
