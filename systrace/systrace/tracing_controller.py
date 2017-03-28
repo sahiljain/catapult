@@ -14,6 +14,7 @@ import sys
 import py_utils
 import tempfile
 import uuid
+from threading import Thread
 
 from systrace import trace_result
 from systrace import tracing_agents
@@ -224,10 +225,17 @@ class TracingController(object):
 
   def _IssueClockSyncMarker(self):
     """Issue clock sync markers to all the child tracing agents."""
+    sync_id = GetUniqueSyncID()
+    threads = []
     for agent in self._child_agents:
       if agent.SupportsExplicitClockSync():
-        sync_id = GetUniqueSyncID()
-        agent.RecordClockSyncMarker(sync_id, ControllerAgentClockSync)
+        t = Thread(target=agent.RecordClockSyncMarker,
+                   args=(sync_id, ControllerAgentClockSync,))
+        threads.append(t)
+    for t in threads:
+      t.start()
+    for t in threads:
+      t.join()
 
 def GetUniqueSyncID():
   """Get a unique sync ID.
