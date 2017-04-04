@@ -48,8 +48,7 @@ def list_categories(config):
   Args:
       config: Tracing config.
   """
-  devutils = device_utils.DeviceUtils(config.device_serial_number,
-                                      disable_gce=config.disable_gce)
+  devutils = device_utils.DeviceUtils(config.device_serial_number)
   categories = devutils.RunShellCommand(
       LIST_CATEGORIES_ARGS, check_return=True)
 
@@ -69,8 +68,7 @@ def get_available_categories(config, device_sdk_version):
       config: Tracing config.
       device_sdk_version: Sdk version int of device to be queried.
   """
-  devutils = device_utils.DeviceUtils(config.device_serial_number,
-                                      disable_gce=config.disable_gce)
+  devutils = device_utils.DeviceUtils(config.device_serial_number)
   categories_output = devutils.RunShellCommand(
       LIST_CATEGORIES_ARGS, check_return=True)
   categories = [c.split('-')[0].strip() for c in categories_output]
@@ -180,8 +178,7 @@ class AtraceAgent(tracing_agents.TracingAgent):
         x in avail_cats]
     if unavailable:
       print 'These categories are unavailable: ' + ' '.join(unavailable)
-    self._device_utils = device_utils.DeviceUtils(config.device_serial_number,
-                           disable_gce=config.disable_gce)
+    self._device_utils = device_utils.DeviceUtils(config.device_serial_number)
     self._device_serial_number = config.device_serial_number
     self._tracer_args = _construct_atrace_args(config,
                                                self._categories)
@@ -482,7 +479,7 @@ def fix_circular_traces(out):
 class AtraceConfig(tracing_agents.TracingConfig):
   def __init__(self, atrace_categories, trace_buf_size, kfuncs,
                app_name, compress_trace_data, from_file,
-               device_serial_number, trace_time, target, disable_gce):
+               device_serial_number, trace_time, target):
     tracing_agents.TracingConfig.__init__(self)
     self.atrace_categories = atrace_categories
     self.trace_buf_size = trace_buf_size
@@ -493,7 +490,6 @@ class AtraceConfig(tracing_agents.TracingConfig):
     self.device_serial_number = device_serial_number
     self.trace_time = trace_time
     self.target = target
-    self.disable_gce = disable_gce
 
 
 def add_options(parser):
@@ -516,10 +512,6 @@ def add_options(parser):
                      action='store', help='read the trace from a '
                      'file (compressed) rather than running a '
                      'live trace')
-  options.add_option('--disable-gce', dest='disable_gce',
-                     default=False, action='store_true',
-                     help='treat devices connected by tcp-ip as '
-                     'local instead of in GCE')
   return options
 
 def get_config(options):
@@ -527,4 +519,4 @@ def get_config(options):
                       options.trace_buf_size, options.kfuncs,
                       options.app_name, options.compress_trace_data,
                       options.from_file, options.device_serial_number,
-                      options.trace_time, options.target, options.disable_gce)
+                      options.trace_time, options.target)
