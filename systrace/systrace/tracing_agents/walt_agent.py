@@ -97,7 +97,7 @@ class WaltAgent(tracing_agents.TracingAgent):
     t1 = trace_time_module.Now()
     command_result = self._device_utils.RunShellCommand(cmd, shell=True)
     nsec = command_result[0].split()[2]
-    self._clock_sync_marker = get_clock_sync_marker(sync_id, nsec)
+    self._clock_sync_marker = format_clock_sync_marker(sync_id, nsec)
     did_record_clock_sync_callback(t1, sync_id)
 
   @py_utils.Timeout(tracing_agents.GET_RESULTS_TIMEOUT)
@@ -114,7 +114,7 @@ class WaltAgent(tracing_agents.TracingAgent):
     return result
 
 
-def get_clock_sync_marker(sync_id, nanosec_time):
+def format_clock_sync_marker(sync_id, nanosec_time):
   return ('<0>-0  (-----) [001] ...1  ' + str(float(nanosec_time) / 1e9)
           + ': tracing_mark_write: trace_event_clock_sync: name='
           + sync_id + '\n')

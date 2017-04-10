@@ -13,6 +13,12 @@ from systrace.tracing_agents import walt_agent
 
 
 class WaltAgentTest(unittest.TestCase):
+  """
+  The WALT agent pulls the trace log from the Android phone, and does not
+  communicate with the WALT device directly. This makes the agent more similar
+  to atrace than BattOr. Since the host only connects to the Android phone,
+  more exhaustive testing would require mocking DeviceUtils.
+  """
 
   @decorators.HostOnlyTest
   def test_construct_walt_args(self):
@@ -23,8 +29,8 @@ class WaltAgentTest(unittest.TestCase):
     self.assertFalse(walt_agent.get_config(options).is_walt_enabled)
 
   @decorators.HostOnlyTest
-  def test_get_clock_sync_marker(self):
-    actual_marker = walt_agent.get_clock_sync_marker(
+  def test_format_clock_sync_marker(self):
+    actual_marker = walt_agent.format_clock_sync_marker(
                     'some_sync_id', 12345678901234)
     expected_marker = ('<0>-0  (-----) [001] ...1  12345.6789012: ' +
                        'tracing_mark_write: trace_event_clock_sync: ' +
