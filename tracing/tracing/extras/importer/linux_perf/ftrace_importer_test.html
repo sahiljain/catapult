@@ -206,7 +206,7 @@ tr.b.unittest.testSuite(function() {
   });
 
   test('clockTypeMarker', function() {
-    var lines = [
+    const lines = [
       '# tracer: nop',
       '#',
       '# clock_type=LINUX_CLOCK_MONOTONIC',
@@ -216,9 +216,9 @@ tr.b.unittest.testSuite(function() {
           'trace_event_clock_sync: name=some_sync_id'
     ];
 
-    var io = new tr.importer.ImportOptions();
-    var m = new tr.Model();
-    var i = new tr.importer.Import(m, io);
+    const io = new tr.importer.ImportOptions();
+    const m = new tr.Model();
+    const i = new tr.importer.Import(m, io);
 
     m.clockSyncManager.addClockSyncMarker(
         ClockDomainId.LINUX_FTRACE_GLOBAL, 'some_sync_id', 50);

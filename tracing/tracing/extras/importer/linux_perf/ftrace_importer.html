@@ -887,7 +887,10 @@ tr.exportTo('tr.e.importer.linux_perf', function() {
         var line = lines[lineNumber].trim();
         if (line.length === 0) continue;
         if (/^#/.test(line)) {
-          var clockType = /^# clock_type=([A-Z_]+)$/.exec(line);
+          const clockType = /^# clock_type=([A-Z_]+)$/.exec(line);
+          // This allows the clock domain to be specified through a comment,
+          // Ex. "# clock_type=LINUX_CLOCK_MONOTONIC".
+          // This is used in the WALT trace agent.
           if (clockType) {
             this.clockDomainId_ = clockType[1];
           }
